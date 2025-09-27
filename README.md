@@ -1,101 +1,144 @@
 # Proyecto A4 – Sistemas en Tiempo Real
 
 Este proyecto implementa la **Actividad 4: Sensores en tiempo real** de la asignatura *Sistemas en tiempo real*.  
-Consiste en:
 
-- Un **ESP32 con FreeRTOS** que lee un sensor ultrasónico HC-SR04 cada 100 ms y envía las mediciones por puerto serie en formato JSON.
-- Una **interfaz en Python** (middleware) que recibe esos datos, los muestra en una GUI y manipula una geometría (círculo) en función de la distancia.
-
----
-
-## 📦 Requisitos
-
-### Hardware
-- ESP32-WROOM-32 (o compatible).
-- Sensor ultrasónico HC-SR04.
-- Resistencias: 330 Ω × 3 (para el divisor resistivo 5 V → 3.3 V).
-- Protoboard y cables Dupont.
-
-### Software necesario
-- [Arduino IDE](https://www.arduino.cc/en/software) (≥ 2.x).
-- **ESP32 Board Package** en Arduino IDE:
-  1. Abrir *Archivo → Preferencias*.
-  2. En “Gestor de URLs adicionales de tarjetas” agregar:  
-     ```
-     https://dl.espressif.com/dl/package_esp32_index.json
-     ```
-  3. Ir a *Herramientas → Placa → Gestor de tarjetas* y buscar **ESP32** (Instalar).
-- [Python 3.9+](https://www.python.org/downloads/).
-- Pip (gestor de paquetes de Python, normalmente incluido en Python 3).
-- Git (opcional, para clonar el repositorio).
+Incluye:
+- **ESP32 + FreeRTOS** leyendo un sensor ultrasónico HC-SR04 cada 100 ms y enviando los datos por puerto serie en JSON.
+- **Middleware en Python** con GUI (Tkinter) que muestra la distancia y manipula una geometría en tiempo real.
 
 ---
 
-## ⚡ Montaje del circuito
+## 🖥️ 1. Preparación del entorno en una máquina nueva
 
-1. Conectar el **HC-SR04**:
-   - VCC → 5V del ESP32  
-   - GND → GND del ESP32  
-   - TRIG → GPIO5  
-   - ECHO → **Divisor resistivo** → GPIO18  
+### 1.1 Instalar Git
+1. Descarga desde [https://git-scm.com/downloads](https://git-scm.com/downloads).
+2. Instálalo con las opciones por defecto.
+3. Abre una terminal (PowerShell en Windows o Terminal en Linux/macOS).
+4. Verifica:
+   ```bash
+   git --version
+   ```
 
-2. **Divisor resistivo para ECHO**:
-   - ECHO → R1 = 330 Ω → nodo intermedio  
-   - Nodo → R2+R3 (330 Ω + 330 Ω en serie = 660 Ω) → GND  
-   - Nodo → GPIO18  
-
-Esto convierte la señal de 5 V en ≈3.3 V segura para el ESP32.
-
----
-
-## 🖥️ Código Arduino (ESP32)
-
-1. Abrir `arduino/esp32_ultrasonic.ino` en Arduino IDE.
-2. Seleccionar placa **ESP32 Dev Module** (o la que corresponda a tu ESP32).
-3. Seleccionar el puerto COM correcto.
-4. Subir el código al ESP32.
-
-El ESP32 comenzará a imprimir por Serial líneas JSON tipo:
-
-```json
-{"distance_cm":42.37}
+### 1.2 Clonar el repositorio
+En la carpeta de tu preferencia:
+```bash
+git clone https://github.com/tu-usuario/proyecto-a4.git
+cd proyecto-a4
 ```
 
 ---
 
-## 🖼️ Interfaz Python (GUI)
+## 🔧 2. Instalar Arduino IDE y configurar ESP32
 
-### Crear entorno virtual (recomendado)
+### 2.1 Instalar Arduino IDE
+- Descarga de [Arduino IDE](https://www.arduino.cc/en/software) (versión 2.x recomendada).
+- Instala con opciones por defecto.
 
+### 2.2 Instalar soporte para ESP32
+1. Abre Arduino IDE.
+2. Ve a **Archivo → Preferencias**.
+3. En “Gestor de URLs adicionales de tarjetas” agrega:
+   ```
+   https://dl.espressif.com/dl/package_esp32_index.json
+   ```
+4. Luego abre **Herramientas → Placa → Gestor de tarjetas**.
+5. Busca **esp32** e instala el paquete de Espressif.
+
+### 2.3 Seleccionar placa y puerto
+- Conecta tu ESP32 por USB.
+- En Arduino IDE:  
+  - **Herramientas → Placa → ESP32 Arduino → ESP32 Dev Module**.  
+  - **Herramientas → Puerto → COMX** (Windows) o `/dev/ttyUSB0` (Linux) o `/dev/cu.SLAB_USBtoUART` (macOS).
+
+### 2.4 Subir el código de Arduino
+1. Abre el archivo:
+   ```
+   arduino/esp32_ultrasonic.ino
+   ```
+2. Haz clic en **Verificar** y luego **Subir**.
+3. El ESP32 empezará a enviar mensajes JSON como:
+   ```json
+   {"distance_cm":42.37}
+   ```
+
+---
+
+## ⚡ 3. Montaje del circuito
+
+### 3.1 Conexiones HC-SR04
+- VCC → 5V del ESP32  
+- GND → GND del ESP32  
+- TRIG → GPIO5  
+- ECHO → **Divisor resistivo** → GPIO18  
+
+### 3.2 Divisor resistivo
+- ECHO → R1 = 330 Ω → Nodo intermedio  
+- Nodo → (R2 + R3 en serie = 660 Ω) → GND  
+- Nodo → GPIO18  
+
+Esto reduce la señal de 5 V a ≈3.3 V.
+
+---
+
+## 🐍 4. Instalar Python e interfaz gráfica
+
+### 4.1 Instalar Python 3
+- Descarga de [Python.org](https://www.python.org/downloads/) (3.9+).
+- En Windows: marcar **“Add Python to PATH”** durante la instalación.
+- Verifica en terminal:
+  ```bash
+  python --version
+  ```
+  o
+  ```bash
+  python3 --version
+  ```
+
+### 4.2 Crear entorno virtual
+En la carpeta `python/` del repo:
 ```bash
 cd python
 python -m venv .venv
-# Activar:
-# Windows PowerShell:
-.\.venv\Scripts\Activate.ps1
-# Linux / macOS:
-source .venv/bin/activate
 ```
 
-### Instalar dependencias
+Activar el entorno:
+- **Windows PowerShell**
+  ```powershell
+  .\.venv\Scripts\Activate.ps1
+  ```
+- **Linux/macOS**
+  ```bash
+  source .venv/bin/activate
+  ```
 
+### 4.3 Instalar dependencias
 ```bash
 pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+Si no tienes `requirements.txt`, instala manualmente:
+```bash
 pip install pyserial
 ```
 
-### Ejecutar
+En Linux puede que necesites:
+```bash
+sudo apt-get install python3-tk
+```
 
+### 4.4 Ejecutar la interfaz
 ```bash
 python middleware_gui.py
 ```
 
-1. Selecciona el puerto COM donde está el ESP32 (ej. `COM3` en Windows o `/dev/ttyUSB0` en Linux).
+Pasos en la GUI:
+1. Selecciona el puerto COM del ESP32 (`COM3` en Windows, `/dev/ttyUSB0` en Linux).
 2. Haz clic en **Conectar**.
-3. La GUI mostrará:
-   - La distancia en cm.
+3. Verás:
+   - Distancia en cm.
    - Un círculo cuyo radio cambia con la distancia.
-   - Log de mensajes recibidos.
+   - Logs de datos recibidos.
 
 ---
 
@@ -104,10 +147,10 @@ python middleware_gui.py
 ```
 /
 ├── arduino/
-│   └── esp32_ultrasonic.ino     # Código para el ESP32 con FreeRTOS
+│   └── esp32_ultrasonic.ino     # Código para ESP32 con FreeRTOS
 ├── python/
-│   ├── middleware_gui.py        # GUI en Python (Tkinter + pyserial)
-│   └── requirements.txt         # Dependencias del proyecto
+│   ├── middleware_gui.py        # GUI en Python
+│   └── requirements.txt         # Dependencias de Python
 └── README.md
 ```
 
@@ -115,19 +158,20 @@ python middleware_gui.py
 
 ## 🛠️ Troubleshooting
 
-- **Error “Acceso denegado” en COM3:** Cierra el Monitor Serie de Arduino IDE; solo un programa puede usar el puerto a la vez.
-- **Valores null:** Revisa el divisor resistivo (330 Ω arriba, 660 Ω abajo).
-- **La GUI no abre:** En Linux instala Tkinter:  
-  ```bash
-  sudo apt-get install python3-tk
-  ```
-- **Múltiples COM disponibles:** Desconecta y reconecta el ESP32 para identificar cuál aparece en la lista.
+- **Error "Acceso denegado" en COM**  
+  Cierra el *Monitor Serie* de Arduino IDE; solo un programa puede usar el puerto a la vez.
+- **Valores null en JSON**  
+  Revisa el divisor resistivo (330 Ω arriba, 660 Ω abajo).
+- **La GUI no abre**  
+  Instala Tkinter (`sudo apt-get install python3-tk` en Linux).
+- **No ves el puerto**  
+  Reinstala drivers del ESP32 (CH340 o CP2102, según tu placa).
 
 ---
 
 ## ✨ Próximos pasos
 
-Este proyecto es base para la **Actividad 5**: control de motor DC con comandos desde Python.  
-Se podrá ampliar la GUI para enviar JSON con velocidad y dirección al ESP32.
+Este proyecto es la base para la **Actividad 5**:  
+Control de un motor DC con comandos desde Python. La GUI podrá ampliarse con sliders y botones para enviar JSON al ESP32.
 
 ---
