@@ -44,7 +44,9 @@ cd proyecto-a4
 4. Luego abre **Herramientas → Placa → Gestor de tarjetas**.
 5. Busca **esp32** e instala el paquete de Espressif.
 
-### 2.3 Seleccionar placa y puerto
+### 2.3 Seleccionar placa y puerto(Si arduino no reconoce el ESP32 conectado descargar el driver e instalar https://www.silabs.com/software-and-tools/usb-to-uart-bridge-vcp-drivers?tab=downloads)
+Una vez descargado el driver buscar el archivo "silabser.inf", click derecho y seleccionar la opcion "Instalar"
+
 - Conecta tu ESP32 por USB.
 - En Arduino IDE:  
   - **Herramientas → Placa → ESP32 Arduino → ESP32 Dev Module**.  
